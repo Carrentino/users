@@ -33,6 +33,7 @@ class UserService:
             await self.user_repository.create(user)
         except IntegrityError:
             raise UserAlreadyExistsError from None
+        await self.send_email_code(user)
 
     async def send_email_code(self, user: User) -> None:
         code = await self.generate_code()

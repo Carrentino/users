@@ -28,6 +28,7 @@ fastapi-storages = "^0.3.0"
 
 bcrypt = "^4.3.0"
 phonenumbers = "^8.13.55"
+celery = "^5.4.0"
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
 mypy = "^1.10.0"

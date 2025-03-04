@@ -16,7 +16,6 @@ from pydantic import PostgresDsn
 from src.settings import get_settings
 
 
-
 @lru_cache
 def make_db_client(dsn: PostgresDsn = get_settings().postgres_dsn) -> SQLAlchemyClient:
     return SQLAlchemyClient(dsn=dsn)
@@ -55,7 +54,7 @@ def setup_prometheus(app: FastAPI) -> None:
 
 def make_app() -> FastAPI:
     app = FastAPI(
-        title='base',
+        title='users',
         lifespan=_lifespan,
         docs_url='/api/docs',
         redoc_url='/api/redoc',

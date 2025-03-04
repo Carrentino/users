@@ -4,6 +4,13 @@ from pydantic import Field, PostgresDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+class AuthSettings(BaseSettings):
+    algorithm: str
+    secret_key: SecretStr = Field(default=SecretStr('551b8ef09b5e43ddcc45461f854a89b83b9277c6e578f750bf5a6bc3f06d8c08'))
+    access_lifetime: int = Field(default=7)
+    refresh_lifetime: int = Field(default=15)
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file='../.env',
@@ -36,6 +43,8 @@ class Settings(BaseSettings):
     jwt_key: SecretStr = Field(default=SecretStr('551b8ef09b5e43ddcc45461f854a89b83b9277c6e578f750bf5a6bc3f06d8c08'))
 
     redis_url: str = Field(default='redis://localhost:6379')
+
+    auth_settings: AuthSettings = AuthSettings()
 
 
 @lru_cache

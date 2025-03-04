@@ -9,7 +9,7 @@ from src.errors.http import (
     InvalidCodeHttpError,
 )
 from src.errors.service import UserAlreadyExistsError, UserNotFoundError, InvalidUserStatusError, InvalidCodeError
-from src.services.user_service import UserService
+from src.services.user import UserService
 from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, VerifyTokenReq
 from src.web.depends.service import get_user_service
 

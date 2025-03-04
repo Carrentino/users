@@ -49,7 +49,7 @@ class UserService:
             raise InvalidUserStatusError
         async with RedisClient(get_settings().redis_url) as rc:
             saved_code = await rc.get(user.id)
-        if saved_code != code:
+        if saved_code is None or saved_code != code:
             raise InvalidCodeError
         await self.user_repository.update(user.id, status=UserStatus.NOT_VERIFIED)
         return await self.create_tokens(user)

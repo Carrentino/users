@@ -13,7 +13,8 @@ from helpers.sqlalchemy.client import SQLAlchemyClient
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
 
-from src.settings import get_settings
+from settings import get_settings
+from src.web.api.users.views import users_router
 
 
 @lru_cache
@@ -42,7 +43,7 @@ def setup_middlewares(app: FastAPI) -> None:
 
 def setup_api_routers(app: FastAPI) -> None:
     api_router = APIRouter(prefix='/api')
-
+    api_router.include_router(users_router, prefix='/users', tags=['users'])
     app.include_router(router=api_router)
 
 

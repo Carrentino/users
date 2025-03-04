@@ -1,7 +1,7 @@
 import random
 import string
 
-from helpers.redis.client import RedisClient
+from helpers.redis_client.client import RedisClient
 from sqlalchemy.exc import IntegrityError
 
 from src.db.models.user import User

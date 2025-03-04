@@ -11,7 +11,7 @@ from src.web.depends.service import get_user_service
 users_router = APIRouter()
 
 
-@users_router.post('registration/')
+@users_router.post('/registration/')
 async def registration(
     user_service: Annotated[UserService, Depends(get_user_service)],
     req_data: UserRegistrationReq,

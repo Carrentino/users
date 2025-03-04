@@ -53,24 +53,6 @@ snappy = ["cramjam"]
 zstd = ["cramjam"]
 
 [[package]]
-name = "aioredis"
-version = "2.0.1"
-description = "asyncio (PEP 3156) Redis support"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "aioredis-2.0.1-py3-none-any.whl", hash = "sha256:9ac0d0b3b485d293b8ca1987e6de8658d7dafcca1cddfcd1d506cae8cdebfdd6"},
-    {file = "aioredis-2.0.1.tar.gz", hash = "sha256:eaa51aaf993f2d71f54b70527c440437ba65340588afeb786cd87c55c89cd98e"},
-]
-
-[package.dependencies]
-async-timeout = "*"
-typing-extensions = "*"
-
-[package.extras]
-hiredis = ["hiredis (>=1.0)"]
-
-[[package]]
 name = "alembic"
 version = "1.14.1"
 description = "A database migration tool for SQLAlchemy."
@@ -1130,7 +1112,6 @@ develop = false
 
 [package.dependencies]
 aiokafka = "^0.12.0"
-aioredis = "^2.0.1"
 factory-boy = "^3.3.3"
 fastapi = "^0.115.8"
 httpx = "^0.28.1"
@@ -1139,13 +1120,14 @@ orjson = "^3.10.15"
 pydantic = "^2.10.6"
 pytest = "^8.3.4"
 python-jose = "3.4.0"
+redis = "^5.2.1"
 sqlalchemy = "^2.0.37"
 
 [package.source]
 type = "git"
 url = "git@github.com:Carrentino/helpers.git"
 reference = "main"
-resolved_reference = "5e531a5611508a6270fb0aa1494c6ecab0f049af"
+resolved_reference = "4517f03f6c755464872e26e46035ed237b6e4e54"
 
 [[package]]
 name = "httpcore"
@@ -1828,6 +1810,17 @@ files = [
 
 [package.dependencies]
 ptyprocess = ">=0.5"
+
+[[package]]
+name = "phonenumbers"
+version = "8.13.55"
+description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
+optional = false
+python-versions = "*"
+files = [
+    {file = "phonenumbers-8.13.55-py2.py3-none-any.whl", hash = "sha256:25feaf46135f0fb1e61b69513dc97c477285ba98a69204bf5a8cf241a844a718"},
+    {file = "phonenumbers-8.13.55.tar.gz", hash = "sha256:57c989dda3eabab1b5a9e3d24438a39ebd032fa0172bf68bfd90ab70b3d5e08b"},
+]
 
 [[package]]
 name = "pillow"
@@ -2851,6 +2844,21 @@ files = [
 all = ["numpy"]
 
 [[package]]
+name = "redis"
+version = "5.2.1"
+description = "Python client for Redis database and key-value store"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "redis-5.2.1-py3-none-any.whl", hash = "sha256:ee7e1056b9aea0f04c6c2ed59452947f34c4940ee025f5dd83e6a6418b6989e4"},
+    {file = "redis-5.2.1.tar.gz", hash = "sha256:16f2e22dff21d5125e8481515e386711a34cbec50f0e44413dd7d9c060a54e0f"},
+]
+
+[package.extras]
+hiredis = ["hiredis (>=3.0.0)"]
+ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==23.2.1)", "requests (>=2.31.0)"]
+
+[[package]]
 name = "requests"
 version = "2.32.3"
 description = "Python HTTP for Humans."
@@ -3813,4 +3821,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.12"
-content-hash = "34019fe36b6cf845cb40762741a383b26b59fa0a8579af7799b13eccd6c751a0"
+content-hash = "05e4f2d59c2aaaf8abcf288e8bd0a53742b4a7af3c078ca604de092ef69e7f86"

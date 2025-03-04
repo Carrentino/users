@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from src.integrations.notifications import NotificationsClient
-from src.repositories.user_repository import UserRepository
+from src.repositories.user import UserRepository
 from src.services.user import UserService
 from src.web.depends.integrations import get_notifications_client
 from src.web.depends.repository import get_user_repository

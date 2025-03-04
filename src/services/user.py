@@ -12,7 +12,7 @@ from src.db.enums.user import UserStatus
 from src.db.models.user import User
 from src.errors.service import UserAlreadyExistsError, UserNotFoundError, InvalidUserStatusError, InvalidCodeError
 from src.integrations.notifications import NotificationsClient
-from src.repositories.user_repository import UserRepository
+from src.repositories.user import UserRepository
 from src.settings import get_settings
 from src.web.api.users.schemas import UserRegistrationReq, TokenResponse
 

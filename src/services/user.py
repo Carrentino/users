@@ -59,14 +59,14 @@ class UserService:
         now = datetime.now()
 
         access_payload = {
-            "sub": str(user.id),
+            "user_id": str(user.id),
             "status": user.status,
             "type": TokenType.ACCESS,
             "exp": now + timedelta(days=get_settings().auth_settings.access_lifetime),
         }
 
         refresh_payload = {
-            "sub": str(user.id),
+            "user_id": str(user.id),
             "type": TokenType.REFRESH,
             "exp": now + timedelta(days=get_settings().auth_settings.refresh_lifetime),
         }

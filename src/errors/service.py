@@ -1,5 +1,4 @@
 from helpers.errors import BaseError
-from pydantic import BaseModel
 
 
 class UserAlreadyExistsError(BaseError):
@@ -18,5 +17,5 @@ class InvalidCodeError(BaseError):
     message = 'Invalid code'
 
 
-class WrongPasswordError(BaseModel):
+class WrongPasswordError(BaseError):
     message = 'Wrong password'

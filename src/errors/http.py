@@ -13,7 +13,7 @@ class UserNotFoundHttpError(ServerError):
 
 
 class InvalidUserStatusHttpError(ServerError):
-    status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_403_FORBIDDEN
     message = 'User has invalid status'
 
 

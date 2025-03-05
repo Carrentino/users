@@ -49,7 +49,7 @@ async def test_verify_code_invalid_status(mock_redis: AsyncMock, client: AsyncCl
 
     mock_redis.return_value = mock_redis_instance
     response = await client.post('/api/users/verify-code/', json=req)
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.parametrize('code', [None, '000001'])

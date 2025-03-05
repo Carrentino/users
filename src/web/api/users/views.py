@@ -60,3 +60,5 @@ async def login(
         raise UserNotFoundHttpError from None
     except WrongPasswordError:
         raise WrongPasswordHttpError from None
+    except InvalidUserStatusError:
+        raise InvalidUserStatusHttpError from None

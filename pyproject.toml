@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "base"
+name = "users"
 package-mode = false
 version = "0.1.0"
 
@@ -26,6 +26,9 @@ pytest-env = "^1.1.4"
 fastapi-storages = "^0.3.0"
 
 
+bcrypt = "^4.3.0"
+phonenumbers = "^8.13.55"
+celery = "^5.4.0"
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
 mypy = "^1.10.0"
@@ -53,7 +56,6 @@ filterwarnings = [
     "ignore::DeprecationWarning",
     "ignore::UserWarning"
 ]
-addopts = "-vv -ss --tb=short" #  --alluredir allure-results
 asyncio_mode = "auto"
 env = [
     "AUTH_ENVIRONMENT=pytest",
@@ -150,6 +152,7 @@ lint.ignore = [
     "SLF00",
     "ISC001",
     "RET504",
+    "ARG001",
     "S105",
     "S106",
     "RUF001",

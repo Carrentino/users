@@ -7,10 +7,17 @@ from src.errors.http import (
     UserNotFoundHttpError,
     InvalidUserStatusHttpError,
     InvalidCodeHttpError,
+    WrongPasswordHttpError,
 )
-from src.errors.service import UserAlreadyExistsError, UserNotFoundError, InvalidUserStatusError, InvalidCodeError
+from src.errors.service import (
+    UserAlreadyExistsError,
+    UserNotFoundError,
+    InvalidUserStatusError,
+    InvalidCodeError,
+    WrongPasswordError,
+)
 from src.services.user import UserService
-from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, VerifyTokenReq
+from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, VerifyTokenReq, UserLoginReq
 from src.web.depends.service import get_user_service
 
 users_router = APIRouter()
@@ -40,3 +47,16 @@ async def verify_code(
         raise InvalidUserStatusHttpError from None
     except InvalidCodeError:
         raise InvalidCodeHttpError from None
+
+
+@users_router.post('/login/')
+async def login(
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    req_data: UserLoginReq,
+) -> TokenResponse:
+    try:
+        return await user_service.login(email=req_data.email, password=req_data.password)
+    except UserNotFoundError:
+        raise UserNotFoundHttpError from None
+    except WrongPasswordError:
+        raise WrongPasswordHttpError from None

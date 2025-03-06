@@ -13,7 +13,7 @@ class AuthSettings(BaseSettings):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file='../.env',
+        env_file='.env',
         env_file_encoding='utf-8',
         str_strip_whitespace=True,
         validate_default=True,
@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     jwt_key: SecretStr = Field(default=SecretStr('551b8ef09b5e43ddcc45461f854a89b83b9277c6e578f750bf5a6bc3f06d8c08'))
 
     redis_url: str = Field(default='redis://localhost:6379')
+    redis_balance_db: int
 
     auth_settings: AuthSettings = AuthSettings()
 

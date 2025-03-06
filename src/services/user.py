@@ -109,11 +109,11 @@ class UserService:
 
     async def get_user(self, user_id: UUID) -> UserProfile:
         user = await self.user_repository.get(user_id)
-        async with RedisClient(get_settings().redis_url, db=get_settings().balance_db) as rc:
+        async with RedisClient(get_settings().redis_url, db=get_settings().redis_balance_db) as rc:
             balance = await rc.get(str(user.id))
         if balance is None:
             balance = await self.payment_client.get_user_balance(user_id)
-        async with RedisClient(get_settings().redis_url, db=get_settings().balance_db) as rc:
+        async with RedisClient(get_settings().redis_url, db=get_settings().redis_balance_db) as rc:
             await rc.set(str(user.id), balance)
         return UserProfile(
             id=user.id,

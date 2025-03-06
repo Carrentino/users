@@ -21,6 +21,7 @@ from src.errors.service import (
 from src.integrations.notifications import NotificationsClient
 from src.repositories.user import UserRepository
 from src.settings import get_settings
+from src.web.api.me.schemas import UserProfile
 from src.web.api.users.schemas import UserRegistrationReq, TokenResponse
 
 
@@ -101,3 +102,7 @@ class UserService:
         if not await self.user_repository.verify_password(password, user.password):
             raise WrongPasswordError
         return await self.create_tokens(user)
+
+    async def get_user(self, user_id: UUID) -> UserProfile:
+        user = await self.user_repository.get(user_id)
+        return UserProfile.model_validate(user)

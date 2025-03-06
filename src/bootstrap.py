@@ -14,6 +14,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
 
 from settings import get_settings
+from src.web.api.me.views import me_router
 from src.web.api.users.views import users_router
 
 
@@ -44,6 +45,7 @@ def setup_middlewares(app: FastAPI) -> None:
 def setup_api_routers(app: FastAPI) -> None:
     api_router = APIRouter(prefix='/api')
     api_router.include_router(users_router, prefix='/users', tags=['users'])
+    api_router.include_router(me_router, prefix='/me', tags=['me'])
     app.include_router(router=api_router)
 
 

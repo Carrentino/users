@@ -15,5 +15,8 @@ class UserProfile(BaseModel):
     last_name: str
     email: str
     phone_number: str
-    password: str
     status: UserStatus
+    balance: int
+
+    class Config:
+        from_attributes = True

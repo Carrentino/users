@@ -8,7 +8,7 @@ from helpers.models.user import UserContext
 from src.services.user import UserService
 from src.services.user_favorite import UserFavoriteService
 from src.web.api.me.schemas import UpdateFavoritesReq, UserProfile
-from src.web.depends.service import get_user_favorite_service
+from src.web.depends.service import get_user_favorite_service, get_user_service
 
 me_router = APIRouter()
 
@@ -25,7 +25,7 @@ async def update_favorite(
 
 @me_router.get('/')
 async def profile(
-    user_service: Annotated[UserService, Depends(get_current_user)],
+    user_service: Annotated[UserService, Depends(get_user_service)],
     user_context: Annotated[UserContext, Depends(get_current_user)],
 ) -> UserProfile:
     return await user_service.get_user(UUID(user_context.user_id))

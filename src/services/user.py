@@ -19,6 +19,7 @@ from src.errors.service import (
     WrongPasswordError,
 )
 from src.integrations.notifications import NotificationsClient
+from src.integrations.payment import PaymentClient
 from src.repositories.user import UserRepository
 from src.settings import get_settings
 from src.web.api.me.schemas import UserProfile
@@ -28,9 +29,12 @@ from src.web.api.users.schemas import UserRegistrationReq, TokenResponse
 class UserService:
     AVAILABLE_USER_STATUSES: ClassVar = [UserStatus.NOT_VERIFIED, UserStatus.VERIFIED, UserStatus.SUSPECTED]
 
-    def __init__(self, user_repository: UserRepository, notifications_client: NotificationsClient) -> None:
+    def __init__(
+        self, user_repository: UserRepository, notifications_client: NotificationsClient, payment_client: PaymentClient
+    ) -> None:
         self.user_repository = user_repository
         self.notifications_client = notifications_client
+        self.payment_client = payment_client
 
     @staticmethod
     async def generate_code():
@@ -105,4 +109,18 @@ class UserService:
 
     async def get_user(self, user_id: UUID) -> UserProfile:
         user = await self.user_repository.get(user_id)
-        return UserProfile.model_validate(user)
+        async with RedisClient(get_settings().redis_url, db=get_settings().balance_db) as rc:
+            balance = await rc.get(str(user.id))
+        if balance is None:
+            balance = await self.payment_client.get_user_balance(user_id)
+        async with RedisClient(get_settings().redis_url, db=get_settings().balance_db) as rc:
+            await rc.set(str(user.id), balance, 600)
+        return UserProfile(
+            id=user.id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
+            phone_number=user.phone_number,
+            status=user.status,
+            balance=balance,
+        )

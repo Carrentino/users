@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from functools import lru_cache
 from typing import Any
 
+from aiokafka import AIOKafkaConsumer
+from aiokafka.util import create_task
 from fastapi import APIRouter, FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import UJSONResponse
@@ -14,6 +16,7 @@ from helpers.sqlalchemy.client import SQLAlchemyClient
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
 
+from src.kafka.payment.views import payment_listener
 from src.settings import get_settings
 from src.web.api.me.views import me_router
 from src.web.api.users.views import users_router
@@ -29,6 +32,9 @@ async def _lifespan(
     app: FastAPI,  # noqa
 ) -> AsyncGenerator[dict[str, Any], None]:
     client = make_db_client()
+    kafka_consumer = AIOKafkaConsumer()
+    create_task(payment_listener.listen(kafka_consumer))
+    await kafka_consumer.start()
 
     yield {
         'db_client': client,

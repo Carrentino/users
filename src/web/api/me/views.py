@@ -11,7 +11,7 @@ from src.web.depends.service import get_user_favorite_service
 me_router = APIRouter()
 
 
-@me_router.put('/favorite/')
+@me_router.post('/favorite/')
 async def update_favorite(
     user_favorite_service: Annotated[UserFavoriteService, Depends(get_user_favorite_service)],
     user_context: Annotated[UserContext, Depends(get_current_user)],

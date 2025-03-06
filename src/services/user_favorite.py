@@ -13,7 +13,7 @@ class UserFavoriteService:
     async def update_favorite(self, user: UserContext, car_id: UUID) -> None:
         favorite = await self.user_favorite_repository.get_one_by(user_id=user.user_id, car_id=car_id)
         if favorite is None:
-            user_favorite = UserFavorite(car_id=car_id, user_id=user.user_id)
+            user_favorite = UserFavorite(car_id=car_id, user_id=UUID(user.user_id))
             await self.user_favorite_repository.create(user_favorite)
             return
         await self.user_favorite_repository.delete(favorite.id)

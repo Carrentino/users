@@ -15,3 +15,7 @@ class InvalidUserStatusError(BaseError):
 
 class InvalidCodeError(BaseError):
     message = 'Invalid code'
+
+
+class WrongPasswordError(BaseError):
+    message = 'Wrong password'

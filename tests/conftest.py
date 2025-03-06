@@ -64,7 +64,10 @@ async def setup_db() -> AsyncGenerator[SQLAlchemyClient, None]:
 
 @pytest.fixture()
 async def session() -> AsyncSession:
-    return get_session()
+    session = get_session()
+    yield session
+
+    await session.close()
 
 
 @pytest.fixture(scope='session', autouse=True)

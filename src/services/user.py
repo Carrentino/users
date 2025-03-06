@@ -1,6 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
+from typing import ClassVar
 from uuid import UUID
 
 from helpers.enums.auth import TokenType
@@ -10,7 +11,13 @@ from sqlalchemy.exc import IntegrityError
 
 from src.db.enums.user import UserStatus
 from src.db.models.user import User
-from src.errors.service import UserAlreadyExistsError, UserNotFoundError, InvalidUserStatusError, InvalidCodeError
+from src.errors.service import (
+    UserAlreadyExistsError,
+    UserNotFoundError,
+    InvalidUserStatusError,
+    InvalidCodeError,
+    WrongPasswordError,
+)
 from src.integrations.notifications import NotificationsClient
 from src.repositories.user import UserRepository
 from src.settings import get_settings
@@ -18,6 +25,8 @@ from src.web.api.users.schemas import UserRegistrationReq, TokenResponse
 
 
 class UserService:
+    AVAILABLE_USER_STATUSES: ClassVar = [UserStatus.NOT_VERIFIED, UserStatus.VERIFIED, UserStatus.SUSPECTED]
+
     def __init__(self, user_repository: UserRepository, notifications_client: NotificationsClient) -> None:
         self.user_repository = user_repository
         self.notifications_client = notifications_client
@@ -82,3 +91,13 @@ class UserService:
                 get_settings().auth_settings.algorithm,
             ),
         )
+
+    async def login(self, email: str, password: str) -> TokenResponse:
+        user = await self.user_repository.get_one_by(email=email)
+        if user is None:
+            raise UserNotFoundError
+        if user.status not in self.AVAILABLE_USER_STATUSES:
+            raise InvalidUserStatusError
+        if not await self.user_repository.verify_password(password, user.password):
+            raise WrongPasswordError
+        return await self.create_tokens(user)

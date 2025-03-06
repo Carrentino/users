@@ -20,3 +20,8 @@ class VerifyTokenReq(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
+
+
+class UserLoginReq(BaseModel):
+    email: EmailStr
+    password: str

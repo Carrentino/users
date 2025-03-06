@@ -13,10 +13,15 @@ class UserNotFoundHttpError(ServerError):
 
 
 class InvalidUserStatusHttpError(ServerError):
-    status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_403_FORBIDDEN
     message = 'User has invalid status'
 
 
 class InvalidCodeHttpError(ServerError):
     status_code = status.HTTP_400_BAD_REQUEST
     message = 'Invalid code'
+
+
+class WrongPasswordHttpError(ServerError):
+    status_code = status.HTTP_403_FORBIDDEN
+    message = 'Wrong password'

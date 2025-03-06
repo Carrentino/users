@@ -114,7 +114,7 @@ class UserService:
         if balance is None:
             balance = await self.payment_client.get_user_balance(user_id)
         async with RedisClient(get_settings().redis_url, db=get_settings().balance_db) as rc:
-            await rc.set(str(user.id), balance, 600)
+            await rc.set(str(user.id), balance)
         return UserProfile(
             id=user.id,
             first_name=user.first_name,

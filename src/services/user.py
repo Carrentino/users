@@ -1,6 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import ClassVar
 from uuid import UUID
 
@@ -51,7 +52,7 @@ class UserService:
 
     async def send_email_code(self, user: User) -> None:
         code = await self.generate_code()
-        async with RedisClient(get_settings().redis_url) as rc:
+        async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
             await rc.set(str(user.id), code, 300)
         await self.notifications_client.send_email_code(user.email, code)
 
@@ -61,7 +62,7 @@ class UserService:
             raise UserNotFoundError
         if user.status != UserStatus.NOT_REGISTERED:
             raise InvalidUserStatusError
-        async with RedisClient(get_settings().redis_url) as rc:
+        async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
             saved_code = await rc.get(user.id)
         if saved_code is None or saved_code != code:
             raise InvalidCodeError
@@ -109,11 +110,11 @@ class UserService:
 
     async def get_user(self, user_id: UUID) -> UserProfile:
         user = await self.user_repository.get(user_id)
-        async with RedisClient(get_settings().redis_url, db=get_settings().redis_balance_db) as rc:
+        async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
             balance = await rc.get(str(user.id))
         if balance is None:
             balance = await self.payment_client.get_user_balance(user_id)
-        async with RedisClient(get_settings().redis_url, db=get_settings().redis_balance_db) as rc:
+        async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
             await rc.set(str(user.id), balance)
         return UserProfile(
             id=user.id,
@@ -124,3 +125,12 @@ class UserService:
             status=user.status,
             balance=balance,
         )
+
+    async def update_balance(self, user_id: UUID, balance: Decimal) -> None:
+        user = await self.user_repository.get(user_id)
+        if user is None:
+            raise UserNotFoundError
+        if user.status not in self.AVAILABLE_USER_STATUSES:
+            raise InvalidUserStatusError
+        async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
+            await rc.set(str(user_id), balance)

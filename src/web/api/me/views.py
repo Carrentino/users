@@ -5,12 +5,22 @@ from fastapi import APIRouter, Depends
 from helpers.depends.auth import get_current_user
 from helpers.models.user import UserContext
 
+from src.integrations.schemas.cars import CarPaginatedResponse
 from src.services.user import UserService
 from src.services.user_favorite import UserFavoriteService
-from src.web.api.me.schemas import UpdateFavoritesReq, UserProfile
+from src.web.api.me.schemas import UpdateFavoritesReq, UserProfile, FavoritesFilters
 from src.web.depends.service import get_user_favorite_service, get_user_service
 
 me_router = APIRouter()
+
+
+@me_router.get('/favorites/')
+async def get_favorites(
+    user_favorite_service: Annotated[UserFavoriteService, Depends(get_user_favorite_service)],
+    user_context: Annotated[UserContext, Depends(get_current_user)],
+    filters: Annotated[FavoritesFilters, Depends()],
+) -> CarPaginatedResponse:
+    return await user_favorite_service.get_favorites(UUID(user_context.user_id), filters)
 
 
 @me_router.post('/favorite/')

@@ -20,3 +20,8 @@ class UserProfile(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class FavoritesFilters(BaseModel):
+    limit: int = 30
+    offset: int = 0

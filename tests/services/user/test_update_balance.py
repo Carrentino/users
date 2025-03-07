@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
@@ -16,7 +17,7 @@ async def test_update_balance(mock_redis: AsyncMock, user_service: UserService) 
     mock_redis.return_value = mock_redis_instance
     mock_redis_instance.set.return_value = None
     user = await UserFactory.create(status=UserStatus.VERIFIED)
-    balance = 10000
+    balance = Decimal(100.10)
     await user_service.update_balance(user.id, balance)
     mock_redis_instance.set.assert_called_with(str(user.id), balance)
 
@@ -27,7 +28,7 @@ async def test_update_balance_nf_user(mock_redis: AsyncMock, user_service: UserS
 
     mock_redis.return_value = mock_redis_instance
     mock_redis_instance.set.return_value = None
-    balance = 10000
+    balance = Decimal(100.10)
     with pytest.raises(UserNotFoundError):
         await user_service.update_balance(uuid4(), balance)
     mock_redis_instance.set.assert_not_called()
@@ -39,7 +40,7 @@ async def test_update_balance_na_user(mock_redis: AsyncMock, user_service: UserS
 
     mock_redis.return_value = mock_redis_instance
     mock_redis_instance.set.return_value = None
-    balance = 10000
+    balance = Decimal(100.10)
     user = await UserFactory.create(status=UserStatus.BANNED)
     with pytest.raises(InvalidUserStatusError):
         await user_service.update_balance(user.id, balance)

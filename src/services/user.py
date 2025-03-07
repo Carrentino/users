@@ -1,6 +1,7 @@
 import random
 import string
 from datetime import datetime, timedelta
+from decimal import Decimal
 from typing import ClassVar
 from uuid import UUID
 
@@ -125,7 +126,7 @@ class UserService:
             balance=balance,
         )
 
-    async def update_balance(self, user_id: UUID, balance: int) -> None:
+    async def update_balance(self, user_id: UUID, balance: Decimal) -> None:
         user = await self.user_repository.get(user_id)
         if user is None:
             raise UserNotFoundError

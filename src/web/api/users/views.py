@@ -17,7 +17,7 @@ from src.errors.service import (
     WrongPasswordError,
 )
 from src.services.user import UserService
-from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, VerifyTokenReq, UserLoginReq
+from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, VerifyTokenReq, UserLoginReq, UsersFilterId
 from src.web.depends.service import get_user_service
 
 users_router = APIRouter()
@@ -62,3 +62,11 @@ async def login(
         raise WrongPasswordHttpError from None
     except InvalidUserStatusError:
         raise InvalidUserStatusHttpError from None
+
+
+@users_router.get('/')
+async def get_users_by_ids(
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    filters: UsersFilterId = Depends(),
+):
+    return await user_service.get_users_by_ids(filters)

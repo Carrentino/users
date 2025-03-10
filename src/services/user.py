@@ -24,7 +24,7 @@ from src.integrations.payment import PaymentClient
 from src.repositories.user import UserRepository
 from src.settings import get_settings
 from src.web.api.me.schemas import UserProfile
-from src.web.api.users.schemas import UserRegistrationReq, TokenResponse
+from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, UserFI, UsersFilterId
 
 
 class UserService:
@@ -134,3 +134,12 @@ class UserService:
             raise InvalidUserStatusError
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
             await rc.set(str(user_id), balance)
+
+    async def get_users_by_ids(self, filters: UsersFilterId) -> list[UserFI]:
+        result = []
+        if filters is None:
+            return result
+        users = await self.user_repository.get_list(filters.user__id)
+        for user in users:
+            result.append(UserFI.model_validate(user))
+        return result

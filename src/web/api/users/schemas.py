@@ -1,6 +1,7 @@
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from fastapi.params import Query
+from pydantic import BaseModel, EmailStr, Field
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 
@@ -25,3 +26,16 @@ class TokenResponse(BaseModel):
 class UserLoginReq(BaseModel):
     email: EmailStr
     password: str
+
+
+class UsersFilterId(BaseModel):
+    user__id: list[UUID] = Field(Query(list))
+
+
+class UserFI(BaseModel):
+    id: UUID
+    first_name: str
+    last_name: str
+
+    class Config:
+        from_attributes = True

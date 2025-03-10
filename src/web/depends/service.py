@@ -2,13 +2,14 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from src.integrations.cars import CarsClient
 from src.integrations.notifications import NotificationsClient
 from src.integrations.payment import PaymentClient
 from src.repositories.user import UserRepository
 from src.repositories.user_favorite import UserFavoriteRepository
 from src.services.user import UserService
 from src.services.user_favorite import UserFavoriteService
-from src.web.depends.integrations import get_notifications_client, get_payment_client
+from src.web.depends.integrations import get_notifications_client, get_payment_client, get_cars_client
 from src.web.depends.repository import get_user_repository, get_user_favorite_repository
 
 
@@ -24,7 +25,9 @@ async def get_user_service(
 
 async def get_user_favorite_service(
     user_favorite_repository: Annotated[UserFavoriteRepository, Depends(get_user_favorite_repository)],
+    cars_client: Annotated[CarsClient, Depends(get_cars_client)],
 ) -> UserFavoriteService:
     return UserFavoriteService(
         user_favorite_repository=user_favorite_repository,
+        cars_client=cars_client,
     )

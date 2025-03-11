@@ -28,10 +28,7 @@ async def registration(
     user_service: Annotated[UserService, Depends(get_user_service)],
     req_data: UserRegistrationReq,
 ):
-    try:
-        await user_service.registration(req_data)
-    except UserAlreadyExistsError:
-        raise UserAlreadyExistsErrorHttpError from None
+    await user_service.registration(req_data)
 
 
 @users_router.post('/verify-code/')
@@ -40,13 +37,11 @@ async def verify_code(
     req_data: VerifyTokenReq,
 ) -> TokenResponse:
     try:
-        return await user_service.verify_code(user_id=req_data.user_id, code=req_data.code)
-    except UserNotFoundError:
-        raise UserNotFoundHttpError from None
-    except InvalidUserStatusError:
-        raise InvalidUserStatusHttpError from None
+        return await user_service.verify_code(user=req_data)
     except InvalidCodeError:
         raise InvalidCodeHttpError from None
+    except UserAlreadyExistsError:
+        raise UserAlreadyExistsErrorHttpError from None
 
 
 @users_router.post('/login/')

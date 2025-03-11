@@ -6,16 +6,16 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 
 
 class UserRegistrationReq(BaseModel):
+    email: EmailStr
+
+
+class VerifyTokenReq(BaseModel):
+    code: str
     first_name: str
     last_name: str
     email: EmailStr
     phone_number: PhoneNumber
     password: str
-
-
-class VerifyTokenReq(BaseModel):
-    user_id: UUID
-    code: str
 
 
 class TokenResponse(BaseModel):

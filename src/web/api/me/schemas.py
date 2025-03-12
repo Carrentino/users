@@ -17,6 +17,7 @@ class UserProfile(BaseModel):
     phone_number: str | None = None
     status: UserStatus
     balance: int | None = None
+    reviews: list
 
     class Config:
         from_attributes = True

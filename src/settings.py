@@ -68,6 +68,7 @@ class Settings(BaseSettings):
 
     redis: RedisSettings = RedisSettings()
     auth_settings: AuthSettings = AuthSettings()
+    reviews_url: str = Field(default='http://localhost:8080/reviews')
 
 
 @lru_cache

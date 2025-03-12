@@ -21,6 +21,7 @@ from src.errors.service import (
 )
 from src.integrations.notifications import NotificationsClient
 from src.integrations.payment import PaymentClient
+from src.integrations.reviews import ReviewsClient
 from src.repositories.user import UserRepository
 from src.settings import get_settings
 from src.web.api.me.schemas import UserProfile
@@ -31,11 +32,16 @@ class UserService:
     AVAILABLE_USER_STATUSES: ClassVar = [UserStatus.NOT_VERIFIED, UserStatus.VERIFIED, UserStatus.SUSPECTED]
 
     def __init__(
-        self, user_repository: UserRepository, notifications_client: NotificationsClient, payment_client: PaymentClient
+        self,
+        user_repository: UserRepository,
+        notifications_client: NotificationsClient,
+        payment_client: PaymentClient,
+        reviews_client: ReviewsClient,
     ) -> None:
         self.user_repository = user_repository
         self.notifications_client = notifications_client
         self.payment_client = payment_client
+        self.reviews_client = reviews_client
 
     @staticmethod
     async def generate_code():
@@ -107,16 +113,18 @@ class UserService:
             raise WrongPasswordError
         return await self.create_tokens(user)
 
-    async def get_user(self, user_id: UUID, current_user_id: UUID) -> UserProfile:
+    async def get_user(self, user_id: UUID, current_user_id: UUID, token: str | None = None) -> UserProfile:
         user = await self.user_repository.get(user_id)
         if user is None:
             raise UserNotFoundError
+        reviews = await self.reviews_client.get_reviews(user_id, token)
         if user_id != current_user_id:
             return UserProfile(
                 id=user_id,
                 first_name=user.first_name,
                 last_name=user.last_name,
                 status=user.status,
+                reviews=reviews,
             )
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
             balance = await rc.get(str(user.id))
@@ -124,6 +132,7 @@ class UserService:
             balance = await self.payment_client.get_user_balance(user_id)
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
             await rc.set(str(user.id), balance)
+
         return UserProfile(
             id=user.id,
             first_name=user.first_name,
@@ -132,6 +141,7 @@ class UserService:
             phone_number=user.phone_number,
             status=user.status,
             balance=balance,
+            reviews=reviews,
         )
 
     async def update_balance(self, user_id: UUID, balance: Decimal) -> None:

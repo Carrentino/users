@@ -151,7 +151,7 @@ class UserService:
         if user.status not in self.AVAILABLE_USER_STATUSES:
             raise InvalidUserStatusError
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
-            await rc.set(str(user_id), balance)
+            await rc.set(str(user_id), str(balance))
 
     async def get_users_by_ids(self, filters: UsersFilterId) -> list[UserFI]:
         result = []

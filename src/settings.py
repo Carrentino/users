@@ -35,6 +35,26 @@ class RedisSettings(BaseSettings):
     )
 
 
+class KafkaSettings(BaseSettings):
+    bootstrap_servers: str
+    group_id: str
+    topic_user_balance: str
+
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8',
+        str_strip_whitespace=True,
+        validate_default=True,
+        case_sensitive=False,
+        extra='ignore',
+        env_prefix='kafka_',
+    )
+
+    @property
+    def topics(self) -> list[str]:
+        return [v for k, v in self.__dict__.items() if k.startswith('topic_')]
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file='.env',
@@ -67,6 +87,7 @@ class Settings(BaseSettings):
     jwt_key: SecretStr = Field(default=SecretStr('551b8ef09b5e43ddcc45461f854a89b83b9277c6e578f750bf5a6bc3f06d8c08'))
 
     redis: RedisSettings = RedisSettings()
+    kafka: KafkaSettings = KafkaSettings()
     auth_settings: AuthSettings = AuthSettings()
     reviews_url: str = Field(default='http://localhost:8080/reviews')
 

@@ -32,9 +32,12 @@ async def _lifespan(
     app: FastAPI,  # noqa
 ) -> AsyncGenerator[dict[str, Any], None]:
     client = make_db_client()
-    kafka_consumer = AIOKafkaConsumer("user_balance")
+    kafka_consumer = AIOKafkaConsumer(
+        *get_settings().kafka.topics,
+        bootstrap_servers=get_settings().kafka.bootstrap_servers,
+        group_id=get_settings().kafka.group_id,
+    )
     await kafka_consumer.start()
-    # kafka_consumer.subscribe(["user_balance"])
     create_task(payment_listener.listen(kafka_consumer))
     try:
         yield {

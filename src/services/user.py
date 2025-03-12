@@ -107,8 +107,17 @@ class UserService:
             raise WrongPasswordError
         return await self.create_tokens(user)
 
-    async def get_user(self, user_id: UUID) -> UserProfile:
+    async def get_user(self, user_id: UUID, current_user_id: UUID) -> UserProfile:
         user = await self.user_repository.get(user_id)
+        if user is None:
+            raise UserNotFoundError
+        if user_id != current_user_id:
+            return UserProfile(
+                id=user_id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                status=user.status,
+            )
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
             balance = await rc.get(str(user.id))
         if balance is None:

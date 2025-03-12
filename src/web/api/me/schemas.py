@@ -13,10 +13,10 @@ class UserProfile(BaseModel):
     id: UUID
     first_name: str
     last_name: str
-    email: str
-    phone_number: str
+    email: str | None = None
+    phone_number: str | None = None
     status: UserStatus
-    balance: int
+    balance: int | None = None
 
     class Config:
         from_attributes = True

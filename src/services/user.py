@@ -13,18 +13,18 @@ from sqlalchemy.exc import IntegrityError
 from src.db.enums.user import UserStatus
 from src.db.models.user import User
 from src.errors.service import (
-    UserAlreadyExistsError,
     UserNotFoundError,
     InvalidUserStatusError,
     InvalidCodeError,
     WrongPasswordError,
+    UserAlreadyExistsError,
 )
 from src.integrations.notifications import NotificationsClient
 from src.integrations.payment import PaymentClient
 from src.repositories.user import UserRepository
 from src.settings import get_settings
 from src.web.api.me.schemas import UserProfile
-from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, UserFI, UsersFilterId
+from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, UserFI, UsersFilterId, VerifyTokenReq
 
 
 class UserService:
@@ -42,32 +42,31 @@ class UserService:
         return ''.join(random.choices(string.digits, k=6))
 
     async def registration(self, req_data: UserRegistrationReq) -> None:
-        req_data.password = await self.user_repository.hash_password(req_data.password)
-        user = User(**req_data.model_dump())
-        try:
-            await self.user_repository.create(user)
-        except IntegrityError:
-            raise UserAlreadyExistsError from None
-        await self.send_email_code(user)
+        await self.send_email_code(req_data.email)
 
-    async def send_email_code(self, user: User) -> None:
+    async def send_email_code(self, email: str) -> None:
         code = await self.generate_code()
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
-            await rc.set(str(user.id), code, 300)
-        await self.notifications_client.send_email_code(user.email, code)
+            await rc.set(email, code, 300)
+        await self.notifications_client.send_email_code(email, code)
 
-    async def verify_code(self, user_id: UUID, code: str) -> TokenResponse:
-        user = await self.user_repository.get(user_id)
-        if user is None:
-            raise UserNotFoundError
-        if user.status != UserStatus.NOT_REGISTERED:
-            raise InvalidUserStatusError
+    async def verify_code(self, user: VerifyTokenReq) -> TokenResponse:
+        created_user = User(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
+            phone_number=user.phone_number,
+            password=await self.user_repository.hash_password(user.password),
+        )
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
-            saved_code = await rc.get(user.id)
-        if saved_code is None or saved_code != code:
+            saved_code = await rc.get(user.email)
+        if saved_code is None or saved_code != user.code:
             raise InvalidCodeError
-        await self.user_repository.update(user.id, status=UserStatus.NOT_VERIFIED)
-        return await self.create_tokens(user)
+        try:
+            await self.user_repository.create(created_user)
+        except IntegrityError:
+            raise UserAlreadyExistsError from None
+        return await self.create_tokens(created_user)
 
     @staticmethod
     async def create_tokens(user: User) -> TokenResponse:

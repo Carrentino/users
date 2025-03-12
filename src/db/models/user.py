@@ -17,6 +17,6 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     phone_number: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
-    status: Mapped[UserStatus] = mapped_column(Enum(UserStatus), default=UserStatus.NOT_REGISTERED, nullable=False)
+    status: Mapped[UserStatus] = mapped_column(Enum(UserStatus), default=UserStatus.NOT_VERIFIED, nullable=False)
 
     favorites: Mapped['UserFavorite'] = relationship('UserFavorite', back_populates='user')

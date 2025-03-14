@@ -39,6 +39,8 @@ class KafkaSettings(BaseSettings):
     bootstrap_servers: str
     group_id: str
     topic_user_balance: str
+    notifications_url: str
+    topic_email_notifications: str
 
     model_config = SettingsConfigDict(
         env_file='.env',

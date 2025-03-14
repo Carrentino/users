@@ -19,7 +19,7 @@ async def test_update_balance(mock_redis: AsyncMock, user_service: UserService) 
     user = await UserFactory.create(status=UserStatus.VERIFIED)
     balance = Decimal(100.10)
     await user_service.update_balance(user.id, balance)
-    mock_redis_instance.set.assert_called_with(str(user.id), balance)
+    mock_redis_instance.set.assert_called_with(str(user.id), str(balance))
 
 
 @patch('helpers.redis_client.client.RedisClient.__aenter__', new_callable=AsyncMock)

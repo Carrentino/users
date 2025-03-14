@@ -39,3 +39,13 @@ class UserFI(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class ChangePasswordSendCodeReq(BaseModel):
+    email: EmailStr
+
+
+class ChangePasswordTokenReq(BaseModel):
+    code: str
+    email: EmailStr
+    password: str

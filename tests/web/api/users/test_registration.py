@@ -4,7 +4,7 @@ from httpx import AsyncClient
 from starlette import status
 
 
-@patch('src.integrations.notifications.NotificationsClient.send_email_code', new_callable=AsyncMock)
+@patch('src.integrations.notifications.NotificationsClient.send_email_notification', new_callable=AsyncMock)
 @patch('helpers.redis_client.client.RedisClient.__aenter__', new_callable=AsyncMock)
 async def test_registration(mock_redis: AsyncMock, mock_send: AsyncMock, client: AsyncClient) -> None:
     req = {

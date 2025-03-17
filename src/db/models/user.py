@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from helpers.sqlalchemy.base_model import Base
@@ -14,6 +15,7 @@ class User(Base):
     __tablename__ = 'users'
     first_name: Mapped[str]
     last_name: Mapped[str]
+    score: Mapped[Decimal] = mapped_column(default=5.0)
     email: Mapped[str] = mapped_column(unique=True)
     phone_number: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]

@@ -191,3 +191,10 @@ class UserService:
             raise InvalidCodeError
         user.password = await self.user_repository.hash_password(data.password)
         await self.user_repository.update_object(user)
+
+    async def update_score(self, user_id: UUID, score: Decimal) -> None:
+        user = await self.user_repository.get(user_id)
+        if user is None:
+            raise UserNotFoundError
+        user.score = score
+        await self.user_repository.update_object(user)

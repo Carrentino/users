@@ -39,6 +39,7 @@ class KafkaSettings(BaseSettings):
     bootstrap_servers: str
     group_id: str
     topic_user_balance: str
+    topic_user_score: str
     notifications_url: str
     topic_email_notifications: str
 

@@ -1,7 +1,6 @@
 import random
 import string
 from datetime import datetime, timedelta
-from decimal import Decimal
 from typing import ClassVar
 from uuid import UUID
 
@@ -23,6 +22,7 @@ from src.integrations.notifications import NotificationsClient
 from src.integrations.payment import PaymentClient
 from src.integrations.reviews import ReviewsClient
 from src.integrations.schemas.notifications import EmailNotification
+from src.kafka.payment.schemas import UpdateBalanceMessage
 from src.repositories.user import UserRepository
 from src.settings import get_settings
 from src.web.api.me.schemas import UserProfile
@@ -157,14 +157,15 @@ class UserService:
             reviews=reviews,
         )
 
-    async def update_balance(self, user_id: UUID, balance: Decimal) -> None:
-        user = await self.user_repository.get(user_id)
-        if user is None:
-            raise UserNotFoundError
-        if user.status not in self.AVAILABLE_USER_STATUSES:
-            raise InvalidUserStatusError
+    async def update_balance(self, message: UpdateBalanceMessage) -> None:
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.balance_db) as rc:
-            await rc.set(str(user_id), str(balance))
+            for item in message.balances:
+                user = await self.user_repository.get(item.user_id)
+                if user is None:
+                    continue
+                if user.status not in self.AVAILABLE_USER_STATUSES:
+                    continue
+                await rc.set(str(item.user_id), str(item.balance))
 
     async def get_users_by_ids(self, filters: UsersFilterId) -> list[UserFI]:
         result = []

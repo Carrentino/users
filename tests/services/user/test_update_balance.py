@@ -2,10 +2,8 @@ from decimal import Decimal
 from unittest.mock import AsyncMock, patch
 from uuid import uuid4
 
-import pytest
-
 from src.db.enums.user import UserStatus
-from src.errors.service import UserNotFoundError, InvalidUserStatusError
+from src.kafka.payment.schemas import UpdateBalanceMessage, UpdateBalance
 from src.services.user import UserService
 from tests.factories.user import UserFactory
 
@@ -18,7 +16,10 @@ async def test_update_balance(mock_redis: AsyncMock, user_service: UserService) 
     mock_redis_instance.set.return_value = None
     user = await UserFactory.create(status=UserStatus.VERIFIED)
     balance = Decimal(100.10)
-    await user_service.update_balance(user.id, balance)
+    message = UpdateBalanceMessage(
+        balances=[UpdateBalance(user_id=user.id, balance=balance)],
+    )
+    await user_service.update_balance(message)
     mock_redis_instance.set.assert_called_with(str(user.id), str(balance))
 
 
@@ -29,8 +30,10 @@ async def test_update_balance_nf_user(mock_redis: AsyncMock, user_service: UserS
     mock_redis.return_value = mock_redis_instance
     mock_redis_instance.set.return_value = None
     balance = Decimal(100.10)
-    with pytest.raises(UserNotFoundError):
-        await user_service.update_balance(uuid4(), balance)
+    message = UpdateBalanceMessage(
+        balances=[UpdateBalance(user_id=uuid4(), balance=balance)],
+    )
+    await user_service.update_balance(message)
     mock_redis_instance.set.assert_not_called()
 
 
@@ -42,6 +45,8 @@ async def test_update_balance_na_user(mock_redis: AsyncMock, user_service: UserS
     mock_redis_instance.set.return_value = None
     balance = Decimal(100.10)
     user = await UserFactory.create(status=UserStatus.BANNED)
-    with pytest.raises(InvalidUserStatusError):
-        await user_service.update_balance(user.id, balance)
+    message = UpdateBalanceMessage(
+        balances=[UpdateBalance(user_id=user.id, balance=balance)],
+    )
+    await user_service.update_balance(message)
     mock_redis_instance.set.assert_not_called()

@@ -22,10 +22,18 @@ from src.errors.service import (
 from src.integrations.notifications import NotificationsClient
 from src.integrations.payment import PaymentClient
 from src.integrations.reviews import ReviewsClient
+from src.integrations.schemas.notifications import EmailNotification
 from src.repositories.user import UserRepository
 from src.settings import get_settings
 from src.web.api.me.schemas import UserProfile
-from src.web.api.users.schemas import UserRegistrationReq, TokenResponse, UserFI, UsersFilterId, VerifyTokenReq
+from src.web.api.users.schemas import (
+    UserRegistrationReq,
+    TokenResponse,
+    UserFI,
+    UsersFilterId,
+    VerifyTokenReq,
+    ChangePasswordTokenReq,
+)
 
 
 class UserService:
@@ -48,13 +56,18 @@ class UserService:
         return ''.join(random.choices(string.digits, k=6))
 
     async def registration(self, req_data: UserRegistrationReq) -> None:
-        await self.send_email_code(req_data.email)
+        await self.send_email_code(req_data.email, 'Регистрация Carrentino')
 
-    async def send_email_code(self, email: str) -> None:
+    async def send_email_code(self, email: str, title: str) -> None:
         code = await self.generate_code()
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
             await rc.set(email, code, 300)
-        await self.notifications_client.send_email_code(email, code)
+        message = EmailNotification(
+            email=email,
+            title=title,
+            body=code,
+        )
+        await self.notifications_client.send_email_notification(message)
 
     async def verify_code(self, user: VerifyTokenReq) -> TokenResponse:
         created_user = User(
@@ -161,3 +174,20 @@ class UserService:
         for user in users:
             result.append(UserFI.model_validate(user))
         return result
+
+    async def send_code_to_change_password(self, email: str) -> None:
+        user = await self.user_repository.get_one_by(email=email)
+        if user is None:
+            raise UserNotFoundError
+        await self.send_email_code(email, 'Смена пароля Carrentino')
+
+    async def change_password(self, data: ChangePasswordTokenReq) -> None:
+        user = await self.user_repository.get_one_by(email=data.email)
+        if user is None:
+            raise UserNotFoundError
+        async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
+            saved_code = await rc.get(data.email)
+        if saved_code is None or saved_code != data.code:
+            raise InvalidCodeError
+        user.password = await self.user_repository.hash_password(data.password)
+        await self.user_repository.update_object(user)

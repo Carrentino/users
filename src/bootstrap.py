@@ -17,6 +17,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
 
 from src.kafka.payment.views import payment_listener
+from src.kafka.user.views import user_listener
 from src.settings import get_settings
 from src.web.api.me.views import me_router
 from src.web.api.users.views import users_router
@@ -39,6 +40,7 @@ async def _lifespan(
     )
     await kafka_consumer.start()
     create_task(payment_listener.listen(kafka_consumer))
+    create_task(user_listener.listen(kafka_consumer))
     try:
         yield {
             'db_client': client,

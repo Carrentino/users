@@ -64,6 +64,9 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Deploy to Swarm
         uses: appleboy/ssh-action@master

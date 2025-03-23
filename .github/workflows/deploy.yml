@@ -99,6 +99,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             docker run --rm \
-              --network carrentino_net \
+              --network carrentino-net \
               ghcr.io/carrentino/users:${{ github.sha }} \
               alembic upgrade head

@@ -13,7 +13,7 @@ jobs:
         env:
           POSTGRES_DB: base_test
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ""
+          POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
         options: >-
@@ -30,7 +30,7 @@ jobs:
           python-version: 3.12.9
 
       - name: Create test database
-        run: PGPASSWORD="" psql -h localhost -U postgres -c "CREATE DATABASE base_test;"
+        run: PGPASSWORD="postgres" psql -h localhost -U postgres -c "CREATE DATABASE base_test;"
 
 
       - name: Install Poetry
@@ -41,7 +41,8 @@ jobs:
 
       - name: Run tests
         run: poetry run pytest tests/
-
+        env:
+          TEST_POSTGRES_DSN: postgresql+asyncpg://postgres:postgres@localhost:5432/base_test
   build-and-push:
     needs: test
     runs-on: ubuntu-latest

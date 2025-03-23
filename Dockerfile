@@ -13,5 +13,6 @@ RUN pip install poetry && \
 COPY ./src ./src
 COPY ./alembic.ini .
 
+ENV PYTHONPATH=/app
 
 CMD ["poetry", "run", "python", "src/main.py"]

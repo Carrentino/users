@@ -85,7 +85,7 @@ jobs:
             docker service update --with-registry-auth \
             --name users_backend \
             --label-add "traefik.enable=true" \
-            --label-add "traefik.http.routers.users_backend.rule=Host(`carrentino.ru`) && PathPrefix(`/users`)" \
+            --label-add "traefik.http.routers.users_backend.rule=Host(\`carrentino.ru\`) && PathPrefix(\`/users\`)" \
             --label-add "traefik.http.services.users_backend.loadbalancer.server.port=8080" \
             --config-rm $OLD_CONFIG_NAME \
             --config-add source=$CONFIG_NAME,target=/app/.env \

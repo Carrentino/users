@@ -80,12 +80,14 @@ jobs:
           script: |
             CONFIG_NAME="users_env_$(date +%s)"
             echo "Config name: $CONFIG_NAME"
+            OLD_CONFIG_NAME=$(docker config ls --format '{{.Name}}' | grep "users_env" | head -n 1)
             docker config create "$CONFIG_NAME" /home/carrentino-microservices/.users.env
             docker service update --with-registry-auth \
-            --config-rm users_env \
+            --config-rm $OLD_CONFIG_NAME \
             --config-add source=$CONFIG_NAME,target=/app/.env \
             --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
             docker service update --image redis:latest carrentino_users_redis
+            docker config rm $OLD_CONFIG_NAME
   migrate:
     needs: deploy
     runs-on: ubuntu-latest

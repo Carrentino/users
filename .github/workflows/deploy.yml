@@ -1,0 +1,83 @@
+name: Deploy Microservice
+
+on:
+  push:
+    branches: [CARD-47]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-root
+
+      - name: Run tests
+        run: poetry run pytest tests/
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        run: |
+          TAG=${{ github.sha }}
+          docker build -t ghcr.io/${{ github.repository_owner }}/users-service:$TAG .
+          docker push ghcr.io/${{ github.repository_owner }}/users-service:$TAG
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Swarm
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker service update \
+              --image ghcr.io/${{ github.repository_owner }}/users-service:${{ github.sha }} \
+              carrentino_users
+
+            || docker service create \
+              --name carrentino_users \
+              --network carrentino_network \
+              ghcr.io/${{ github.repository_owner }}/users-service:${{ github.sha }}
+
+            # Обновляем Redis
+            docker service update --image redis:latest carrentino_users_redis \
+              || docker service create --name carrentino_users_redis --network carrentino_network redis:latest
+  migrate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run migrations
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker run --rm \
+              --network carrentino_network \
+              ghcr.io/${{ github.repository_owner }}/users-service:${{ github.sha }} \
+              alembic upgrade head

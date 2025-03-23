@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  users_web:
+    image: ghcr.io/carrentino/users:${TAG:-latest}
+    networks:
+      - carrentino-net
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.users.rule=PathPrefix(`/users`)"
+        - "traefik.http.routers.users.entrypoints=websecure"
+        - "traefik.http.routers.users.tls.certresolver=le"
+    env_file:
+      - .users.env
+    depends_on:
+      - postgres
+      - redis
+
+  users_postgres:
+    image: postgres:15-alpine
+    networks:
+      - carrentino-net
+    volumes:
+      - users-pgdata:/var/lib/postgresql/data
+    env_file:
+      - .users.env
+
+  users_redis:
+    image: redis:7-alpine
+    networks:
+      - carrentino-net
+    volumes:
+      - users-redis-data:/data
+
+volumes:
+  users-pgdata:
+  users-redis-data:
+
+networks:
+  carrentino-net:
+    external: true

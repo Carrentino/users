@@ -97,5 +97,4 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    print(Settings().kafka.bootstrap_servers)
     return Settings()

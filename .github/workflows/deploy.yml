@@ -74,12 +74,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          script: |
+          script:
             docker service update --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
-
-            # Обновляем Redis
-            docker service update --image redis:latest carrentino_users_redis || \
-            docker service create --name carrentino_users_redis --network carrentino-net redis:latest
+            docker service update --image redis:latest carrentino_users_redis
   migrate:
     needs: deploy
     runs-on: ubuntu-latest

@@ -22,8 +22,8 @@ class AuthSettings(BaseSettings):
 
 class RedisSettings(BaseSettings):
     url: str = Field(default='redis://localhost:6379')
-    balance_db: int
-    email_code_db: int
+    balance_db: int = Field(default=0)
+    email_code_db: int = Field(default=1)
 
     model_config = SettingsConfigDict(
         env_file='.env',

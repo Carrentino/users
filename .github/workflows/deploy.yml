@@ -29,10 +29,6 @@ jobs:
         with:
           python-version: 3.12.9
 
-      - name: Create test database
-        run: PGPASSWORD="postgres" psql -h localhost -U postgres -c "CREATE DATABASE base_test;"
-
-
       - name: Install Poetry
         run: pip install poetry
 

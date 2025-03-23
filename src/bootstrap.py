@@ -25,6 +25,7 @@ from src.web.api.users.views import users_router
 
 @lru_cache
 def make_db_client(dsn: PostgresDsn = get_settings().postgres_dsn) -> SQLAlchemyClient:
+    print(get_settings().postgres_dsn)
     return SQLAlchemyClient(dsn=dsn)
 
 

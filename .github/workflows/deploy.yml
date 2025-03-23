@@ -55,8 +55,8 @@ jobs:
       - name: Build and push
         run: |
           TAG=${{ github.sha }}
-          docker build -t ghcr.io/${{ github.repository_owner }}/users:$TAG .
-          docker push ghcr.io/${{ github.repository_owner }}/users:$TAG
+          docker build -t ghcr.io/carrentino/users:$TAG .
+          docker push ghcr.io/carrentino/users:$TAG
 
   deploy:
     needs: build-and-push
@@ -70,13 +70,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             docker service update \
-              --image ghcr.io/${{ github.repository_owner }}/users-service:${{ github.sha }} \
+              --image ghcr.io/carrentino/users-service:${{ github.sha }} \
               carrentino_users
 
             || docker service create \
               --name carrentino_users \
               --network carrentino_network \
-              ghcr.io/${{ github.repository_owner }}/users-service:${{ github.sha }}
+              ghcr.io/carrentino/users-service:${{ github.sha }}
 
             # Обновляем Redis
             docker service update --image redis:latest carrentino_users_redis \
@@ -94,5 +94,5 @@ jobs:
           script: |
             docker run --rm \
               --network carrentino_network \
-              ghcr.io/${{ github.repository_owner }}/users-service:${{ github.sha }} \
+              ghcr.io/carrentino/users-service:${{ github.sha }} \
               alembic upgrade head

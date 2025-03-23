@@ -55,8 +55,8 @@ jobs:
       - name: Build and push
         run: |
           TAG=${{ github.sha }}
-          docker build -t ghcr.io/${{ github.repository_owner }}/users-service:$TAG .
-          docker push ghcr.io/${{ github.repository_owner }}/users-service:$TAG
+          docker build -t ghcr.io/${{ github.repository_owner }}/users:$TAG .
+          docker push ghcr.io/${{ github.repository_owner }}/users:$TAG
 
   deploy:
     needs: build-and-push

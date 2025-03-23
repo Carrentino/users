@@ -78,7 +78,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker service update --with-registry-auth --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
+            docker service update --name carrentino_users --secret src=ghcr_token,target=/run/secrets/ghcr_token --with-registry-auth --image ghcr.io/carrentino/users:${{ github.sha }}
             docker service update --image redis:latest carrentino_users_redis
   migrate:
     needs: deploy

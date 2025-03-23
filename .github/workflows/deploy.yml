@@ -11,7 +11,7 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_DB: base
+          POSTGRES_DB: base_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:

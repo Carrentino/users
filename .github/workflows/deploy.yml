@@ -83,21 +83,21 @@ jobs:
             --config-add source=users_env,target=/app/.env \
             --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
             docker service update --image redis:latest carrentino_users_redis
-  migrate:
-    needs: deploy
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    steps:
-      - name: Run migrations
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            docker run --rm \
-              --network carrentino-net \
-              ghcr.io/carrentino/users:${{ github.sha }} \
-              alembic upgrade head
+#  migrate:
+#    needs: deploy
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#      packages: write
+#    steps:
+#      - name: Run migrations
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          key: ${{ secrets.SSH_KEY }}
+#          script: |
+#            docker run --rm \
+#              --network carrentino-net \
+#              ghcr.io/carrentino/users:${{ github.sha }} \
+#              alembic upgrade head

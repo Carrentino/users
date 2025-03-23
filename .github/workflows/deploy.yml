@@ -83,6 +83,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            docker config create $CONFIG_NAME /home/carrentino-microservices/.users.env
             docker service update --with-registry-auth \
             --config-rm users_env \
             --config-add source=$CONFIG_NAME,target=/app/.env \

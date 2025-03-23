@@ -83,10 +83,9 @@ jobs:
             OLD_CONFIG_NAME=$(docker config ls --format '{{.Name}}' | grep "users_env" | head -n 1)
             docker config create "$CONFIG_NAME" /home/carrentino-microservices/.users.env
             docker service update --with-registry-auth \
-            --name users_backend \
             --label-add "traefik.enable=true" \
-            --label-add "traefik.http.routers.users_backend.rule=Host(\`carrentino.ru\`) && PathPrefix(\`/users\`)" \
-            --label-add "traefik.http.services.users_backend.loadbalancer.server.port=8080" \
+            --label-add "traefik.http.routers.carrentino_users.rule=Host(\`carrentino.ru\`) && PathPrefix(\`/users\`)" \
+            --label-add "traefik.http.services.carrentino_users.loadbalancer.server.port=8080" \
             --config-rm $OLD_CONFIG_NAME \
             --config-add source=$CONFIG_NAME,target=/app/.env \
             --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users

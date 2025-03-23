@@ -73,7 +73,7 @@ jobs:
 
       - name: Set environment variable for unique config name
         run: |
-          CONFIG_NAME="users_env_$(date +%s)"
+          CONFIG_NAME="users_env_$(date+%s)"
           echo "CONFIG_NAME=$CONFIG_NAME" >> $GITHUB_ENV
 
       - name: Deploy to Swarm
@@ -83,6 +83,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            echo $$CONFIG_NAME
             docker config create $CONFIG_NAME /home/carrentino-microservices/.users.env
             docker service update --with-registry-auth \
             --config-rm users_env \

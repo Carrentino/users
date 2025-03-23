@@ -41,7 +41,7 @@ class KafkaSettings(BaseSettings):
     topic_user_balance: str = Field(default='users_balance')
     topic_user_score: str = Field(default='users_score')
     notifications_url: str = Field(default='')
-    topic_email_notifications: str = Field(default='')
+    topic_email_notifications: str = Field(default='notifications_mails')
 
     model_config = SettingsConfigDict(
         env_file='.env',

@@ -68,6 +68,9 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Login to GitHub Container Registry
+      - run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
       - name: Deploy to Swarm
         uses: appleboy/ssh-action@master
         with:

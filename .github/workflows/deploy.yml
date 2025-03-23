@@ -71,11 +71,6 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Set environment variable for unique config name
-        run: |
-          CONFIG_NAME="users_env_$(date +%s)"
-          echo "CONFIG_NAME=$CONFIG_NAME" >> $GITHUB_ENV
-
       - name: Deploy to Swarm
         uses: appleboy/ssh-action@master
         with:
@@ -83,6 +78,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            CONFIG_NAME="users_env_$(date +%s)"
             echo "Config name: $CONFIG_NAME"
             docker config create "$CONFIG_NAME" /home/carrentino-microservices/.users.env
             docker service update --with-registry-auth \
@@ -106,5 +102,6 @@ jobs:
           script: |
             docker run --rm \
               --network carrentino-net \
+              --env-file /home/carrentino-microservices/.users.env
               ghcr.io/carrentino/users:${{ github.sha }} \
               alembic upgrade head

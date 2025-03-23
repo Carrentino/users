@@ -24,7 +24,7 @@ async def test_profile(
     mock_redis.return_value = mock_redis_instance
     mock_redis_instance.get.return_value = 123
     mock_get_reviews.return_value = []
-    response = await auth_client.get(f'/api/me/{user_context.user_id}/')
+    response = await auth_client.get(f'/users/api/me/{user_context.user_id}/')
     assert response.status_code == status.HTTP_200_OK
     json_resp = response.json()
     mock_get.assert_not_called()
@@ -48,7 +48,7 @@ async def test_profile_with_payments(
     mock_get.return_value = 123
     mock_get_reviews.return_value = []
 
-    response = await auth_client.get(f'/api/me/{user_context.user_id}/')
+    response = await auth_client.get(f'/users/api/me/{user_context.user_id}/')
     assert response.status_code == status.HTTP_200_OK
     json_resp = response.json()
     mock_get.assert_called_once()
@@ -68,7 +68,7 @@ async def test_profile_nf(
     mock_get.return_value = 123
     mock_get_reviews.return_value = []
 
-    response = await auth_client.get(f'/api/me/{uuid4()}/')
+    response = await auth_client.get(f'/users/api/me/{uuid4()}/')
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
@@ -85,7 +85,7 @@ async def test_profile_another_user(
     mock_get.return_value = 123
     mock_get_reviews.return_value = []
 
-    response = await auth_client.get(f'/api/me/{user.id}/')
+    response = await auth_client.get(f'/users/api/me/{user.id}/')
     assert response.status_code == status.HTTP_200_OK
     json_resp = response.json()
     assert json_resp['balance'] is None

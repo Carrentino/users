@@ -12,5 +12,5 @@ async def test_registration(mock_redis: AsyncMock, mock_send: AsyncMock, client:
     }
     mock_redis_instance = AsyncMock()
     mock_redis.return_value = mock_redis_instance
-    response = await client.post('/api/users/registration/', json=req)
+    response = await client.post('/users/api/users/registration/', json=req)
     assert response.status_code == status.HTTP_200_OK

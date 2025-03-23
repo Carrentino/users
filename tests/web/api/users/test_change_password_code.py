@@ -15,7 +15,7 @@ async def test_change_password_code_ok(mock_redis: AsyncMock, mock_send: AsyncMo
     }
     mock_redis_instance = AsyncMock()
     mock_redis.return_value = mock_redis_instance
-    response = await client.post('/api/users/change-password/send-code/', json=req)
+    response = await client.post('/users/api/users/change-password/send-code/', json=req)
     assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
@@ -27,5 +27,5 @@ async def test_change_password_code_nf(mock_redis: AsyncMock, mock_send: AsyncMo
     }
     mock_redis_instance = AsyncMock()
     mock_redis.return_value = mock_redis_instance
-    response = await client.post('/api/users/change-password/send-code/', json=req)
+    response = await client.post('/users/api/users/change-password/send-code/', json=req)
     assert response.status_code == status.HTTP_404_NOT_FOUND

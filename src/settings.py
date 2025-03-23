@@ -36,12 +36,12 @@ class RedisSettings(BaseSettings):
 
 
 class KafkaSettings(BaseSettings):
-    bootstrap_servers: str
-    group_id: str
-    topic_user_balance: str
-    topic_user_score: str
-    notifications_url: str
-    topic_email_notifications: str
+    bootstrap_servers: str = Field(default='localhost:9092')
+    group_id: str = Field(default='users-group')
+    topic_user_balance: str = Field(default='users_balance')
+    topic_user_score: str = Field(default='users_score')
+    notifications_url: str = Field(default='')
+    topic_email_notifications: str = Field(default='')
 
     model_config = SettingsConfigDict(
         env_file='.env',

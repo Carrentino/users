@@ -75,11 +75,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker service update --image ghcr.io/carrentino/users-service:${{ github.sha }} carrentino_users || \
-            docker service create \
-              --name carrentino_users \
-              --network carrentino-net \
-              ghcr.io/carrentino/users:${{ github.sha }}
+            docker service update --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
 
             # Обновляем Redis
             docker service update --image redis:latest carrentino_users_redis || \

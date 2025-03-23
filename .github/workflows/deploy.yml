@@ -13,6 +13,7 @@ jobs:
         env:
           POSTGRES_DB: base_test
           POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ""
         ports:
           - 5432:5432
         options: >-
@@ -27,6 +28,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.12.9
+
+      - name: Create test database
+        run: PGPASSWORD="" psql -h localhost -U postgres -c "CREATE DATABASE base_test;"
+
 
       - name: Install Poetry
         run: pip install poetry

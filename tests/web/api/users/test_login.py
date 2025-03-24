@@ -39,7 +39,7 @@ async def test_login(
 ) -> None:
     hashed_password = user_repository.hash_password('password')
     user = await UserFactory.create(email='verify@test.ru', password=hashed_password, status=UserStatus.VERIFIED)
-    response = await client.post('/api/users/login/', json=req)
+    response = await client.post('/users/api/users/login/', json=req)
     assert response.status_code == status
     await session.delete(user)
     await session.commit()
@@ -54,7 +54,7 @@ async def test_login_invalid_status(
         'email': 'verify@test.ru',
         'password': 'password',
     }
-    response = await client.post('/api/users/login/', json=req)
+    response = await client.post('/users/api/users/login/', json=req)
     assert response.status_code == status.HTTP_403_FORBIDDEN
     await session.delete(user)
     await session.commit()

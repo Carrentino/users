@@ -22,8 +22,8 @@ class AuthSettings(BaseSettings):
 
 class RedisSettings(BaseSettings):
     url: str = Field(default='redis://localhost:6379')
-    balance_db: int
-    email_code_db: int
+    balance_db: int = Field(default=0)
+    email_code_db: int = Field(default=1)
 
     model_config = SettingsConfigDict(
         env_file='.env',
@@ -32,16 +32,17 @@ class RedisSettings(BaseSettings):
         validate_default=True,
         case_sensitive=False,
         extra='ignore',
+        env_prefix='redis_'
     )
 
 
 class KafkaSettings(BaseSettings):
-    bootstrap_servers: str
-    group_id: str
-    topic_user_balance: str
-    topic_user_score: str
-    notifications_url: str
-    topic_email_notifications: str
+    bootstrap_servers: str = Field(default='localhost:9092')
+    group_id: str = Field(default='users-group')
+    topic_user_balance: str = Field(default='users_balance')
+    topic_user_score: str = Field(default='users_score')
+    notifications_url: str = Field(default='')
+    topic_email_notifications: str = Field(default='notifications_mails')
 
     model_config = SettingsConfigDict(
         env_file='.env',
@@ -68,7 +69,7 @@ class Settings(BaseSettings):
         extra='ignore',
     )
 
-    host: str = '127.0.0.1'
+    host: str = '0.0.0.0'
     port: int = 8080
     workers_count: int = 1
     reload: bool = True

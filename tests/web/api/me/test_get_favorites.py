@@ -21,7 +21,7 @@ async def test_get_favorites(
         await UserFavoriteFactory.create(),
     ]
     mock_get_list.return_value = favorites
-    response = await auth_client.get("/api/me/favorites/")
+    response = await auth_client.get("/users/api/me/favorites/")
     mock_get_list.assert_called_once_with(user_id=UUID(user_context.user_id))
     mock_get_cars.assert_called_once_with([item.car_id for item in favorites], 30, 0)
     assert response.status_code == status.HTTP_200_OK

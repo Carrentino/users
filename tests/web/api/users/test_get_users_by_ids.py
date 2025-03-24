@@ -10,7 +10,7 @@ async def test_get_users_by_ids(client) -> None:
         await UserFactory.create(),
         await UserFactory.create(),
     ]
-    url = f"/api/users/?user__id={users[0].id}"
+    url = f"/users/api/users/?user__id={users[0].id}"
     for i in range(1, len(users)):
         url = f"{url}&user__id={users[i].id}"
     response = await client.get(url)

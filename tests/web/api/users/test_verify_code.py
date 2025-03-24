@@ -18,7 +18,7 @@ async def test_verify_code_ok(mock_redis: AsyncMock, client: AsyncClient) -> Non
 
     mock_redis.return_value = mock_redis_instance
     mock_redis_instance.get.return_value = '000000'
-    response = await client.post('/api/users/verify-code/', json=req)
+    response = await client.post('/users/api/users/verify-code/', json=req)
     assert response.status_code == status.HTTP_200_OK
     assert 'access_token' in response.json()
     assert 'refresh_token' in response.json()
@@ -38,5 +38,5 @@ async def test_verify_code_invalid_code(mock_redis: AsyncMock, client: AsyncClie
 
     mock_redis.return_value = mock_redis_instance
     mock_redis_instance.get.return_value = code
-    response = await client.post('/api/users/verify-code/', json=req)
+    response = await client.post('/users/api/users/verify-code/', json=req)
     assert response.status_code == status.HTTP_400_BAD_REQUEST

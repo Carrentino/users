@@ -1,0 +1,113 @@
+name: Deploy users
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: base_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12.9
+
+      - name: Install Poetry
+        run: pip install poetry
+
+      - name: Install dependencies
+        run: poetry install --no-root
+
+      - name: Run tests
+        run: poetry run pytest tests/
+        env:
+          TEST_POSTGRES_DSN: postgresql+asyncpg://postgres:postgres@localhost:5432/base_test
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        run: |
+          TAG=${{ github.sha }}
+          docker build -t ghcr.io/carrentino/users:$TAG .
+          docker push ghcr.io/carrentino/users:$TAG
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Deploy to Swarm
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            CONFIG_NAME="users_env_$(date +%s)"
+            echo "Config name: $CONFIG_NAME"
+            OLD_CONFIG_NAME=$(docker config ls --format '{{.Name}}' | grep "users_env" | head -n 1)
+            docker config create "$CONFIG_NAME" /home/carrentino-microservices/.users.env
+            docker service update --with-registry-auth \
+            --config-rm $OLD_CONFIG_NAME \
+            --config-add source=$CONFIG_NAME,target=/app/.env \
+            --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
+            docker service update --with-registry-auth \
+            --config-rm $OLD_CONFIG_NAME \
+            --config-add source=$CONFIG_NAME,target=/app/.env \
+            --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users_celery
+            docker service update --image redis:latest carrentino_users_redis
+            docker config rm $OLD_CONFIG_NAME
+  migrate:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Run migrations
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker run --rm \
+              --network carrentino-net \
+              --env-file /home/carrentino-microservices/.users.env \
+              ghcr.io/carrentino/users:${{ github.sha }} \
+              alembic upgrade head

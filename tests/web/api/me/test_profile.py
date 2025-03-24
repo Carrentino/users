@@ -90,4 +90,3 @@ async def test_profile_another_user(
     json_resp = response.json()
     assert json_resp['balance'] is None
     assert json_resp['email'] is None
-    assert json_resp['phone_number'] is None

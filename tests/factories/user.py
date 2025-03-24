@@ -12,6 +12,5 @@ class UserFactory(BaseSqlAlchemyFactory):
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
     email = factory.Faker("email")
-    phone_number = factory.Faker("phone_number")
     password = factory.Faker("password")
     status = factory.Iterator(UserStatus)

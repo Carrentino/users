@@ -12,7 +12,6 @@ async def test_verify_code_ok(mock_redis: AsyncMock, client: AsyncClient) -> Non
         'first_name': 'test',
         'last_name': 'test',
         'email': 'test1@test.ru',
-        'phone_number': '+79999999991',
         'password': 'test_password',
     }
     mock_redis_instance = AsyncMock()
@@ -33,7 +32,6 @@ async def test_verify_code_invalid_code(mock_redis: AsyncMock, client: AsyncClie
         'first_name': 'test',
         'last_name': 'test',
         'email': 'test1@test.ru',
-        'phone_number': '+79999999991',
         'password': 'test_password',
     }
     mock_redis_instance = AsyncMock()

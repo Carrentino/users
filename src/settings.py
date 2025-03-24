@@ -32,6 +32,7 @@ class RedisSettings(BaseSettings):
         validate_default=True,
         case_sensitive=False,
         extra='ignore',
+        env_prefix='redis_'
     )
 
 

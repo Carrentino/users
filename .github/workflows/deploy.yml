@@ -1,8 +1,8 @@
-name: Deploy Microservice
+name: Deploy users
 
 on:
   push:
-    branches: [CARD-47]
+    branches: [develop]
 
 jobs:
   test:
@@ -83,9 +83,6 @@ jobs:
             OLD_CONFIG_NAME=$(docker config ls --format '{{.Name}}' | grep "users_env" | head -n 1)
             docker config create "$CONFIG_NAME" /home/carrentino-microservices/.users.env
             docker service update --with-registry-auth \
-            --label-add "traefik.enable=true" \
-            --label-add "traefik.http.routers.carrentino_users.rule=Host(\`carrentino.ru\`) && PathPrefix(\`/users\`)" \
-            --label-add "traefik.http.services.carrentino_users.loadbalancer.server.port=8080" \
             --config-rm $OLD_CONFIG_NAME \
             --config-add source=$CONFIG_NAME,target=/app/.env \
             --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
@@ -107,6 +104,6 @@ jobs:
           script: |
             docker run --rm \
               --network carrentino-net \
-              --env-file /home/carrentino-microservices/.users.env
+              --env-file /home/carrentino-microservices/.users.env \
               ghcr.io/carrentino/users:${{ github.sha }} \
               alembic upgrade head

@@ -74,7 +74,6 @@ class UserService:
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
-            phone_number=user.phone_number,
             password=await self.user_repository.hash_password(user.password),
         )
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
@@ -151,7 +150,6 @@ class UserService:
             first_name=user.first_name,
             last_name=user.last_name,
             email=user.email,
-            phone_number=user.phone_number,
             status=user.status,
             balance=balance,
             reviews=reviews,

@@ -2,8 +2,7 @@ from enum import StrEnum
 
 
 class UserStatus(StrEnum):
-    NOT_REGISTERED = 'NOT_REGISTERED'
-    NOT_VERIFIED = 'NOT_VERIFIED'
-    VERIFIED = 'VERIFIED'
-    SUSPECTED = 'SUSPECTED'
-    BANNED = 'BANNED'
+    NOT_VERIFIED = 'Не верифицирован'
+    VERIFIED = 'Верифицирован'
+    SUSPECTED = 'Подозреваемый'
+    BANNED = 'Заблокирован'

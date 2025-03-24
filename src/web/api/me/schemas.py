@@ -14,7 +14,6 @@ class UserProfile(BaseModel):
     first_name: str
     last_name: str
     email: str | None = None
-    phone_number: str | None = None
     status: UserStatus
     balance: int | None = None
     reviews: list

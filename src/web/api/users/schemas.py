@@ -2,7 +2,6 @@ from uuid import UUID
 
 from fastapi.params import Query
 from pydantic import BaseModel, EmailStr, Field
-from pydantic_extra_types.phone_numbers import PhoneNumber
 
 
 class UserRegistrationReq(BaseModel):
@@ -14,7 +13,6 @@ class VerifyTokenReq(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
-    phone_number: PhoneNumber
     password: str
 
 
@@ -36,6 +34,7 @@ class UserFI(BaseModel):
     id: UUID
     first_name: str
     last_name: str
+    email: str
 
     class Config:
         from_attributes = True

@@ -49,7 +49,7 @@ async def test_login_invalid_status(
     session: AsyncSession, client: AsyncClient, user_repository: UserRepository
 ) -> None:
     hashed_password = user_repository.hash_password('password')
-    user = await UserFactory.create(email='verify@test.ru', password=hashed_password, status=UserStatus.NOT_REGISTERED)
+    user = await UserFactory.create(email='verify@test.ru', password=hashed_password, status=UserStatus.BANNED)
     req = {
         'email': 'verify@test.ru',
         'password': 'password',

@@ -17,7 +17,6 @@ class User(Base):
     last_name: Mapped[str]
     score: Mapped[Decimal] = mapped_column(default=5.0)
     email: Mapped[str] = mapped_column(unique=True)
-    phone_number: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
     status: Mapped[UserStatus] = mapped_column(Enum(UserStatus), default=UserStatus.NOT_VERIFIED, nullable=False)
 

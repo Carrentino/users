@@ -12,7 +12,6 @@ RUN pip install poetry && \
 
 COPY ./src ./src
 COPY ./alembic.ini .
-EXPOSE 8080
 
 ENV PYTHONPATH=/app
 

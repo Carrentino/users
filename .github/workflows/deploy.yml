@@ -2,7 +2,7 @@ name: Deploy users
 
 on:
   push:
-    branches: [develop]
+    branches: [CARD-47]
 
 jobs:
   test:
@@ -86,24 +86,28 @@ jobs:
             --config-rm $OLD_CONFIG_NAME \
             --config-add source=$CONFIG_NAME,target=/app/.env \
             --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users
+            docker service update --with-registry-auth \
+            --config-rm $OLD_CONFIG_NAME \
+            --config-add source=$CONFIG_NAME,target=/app/.env \
+            --image ghcr.io/carrentino/users:${{ github.sha }} carrentino_users_celery
             docker service update --image redis:latest carrentino_users_redis
             docker config rm $OLD_CONFIG_NAME
-  migrate:
-    needs: deploy
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      packages: write
-    steps:
-      - name: Run migrations
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            docker run --rm \
-              --network carrentino-net \
-              --env-file /home/carrentino-microservices/.users.env \
-              ghcr.io/carrentino/users:${{ github.sha }} \
-              alembic upgrade head
+#  migrate:
+#    needs: deploy
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#      packages: write
+#    steps:
+#      - name: Run migrations
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USERNAME }}
+#          key: ${{ secrets.SSH_KEY }}
+#          script: |
+#            docker run --rm \
+#              --network carrentino-net \
+#              --env-file /home/carrentino-microservices/.users.env \
+#              ghcr.io/carrentino/users:${{ github.sha }} \
+#              alembic upgrade head

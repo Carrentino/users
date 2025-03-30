@@ -64,7 +64,7 @@ class UserService:
         async with RedisClient(get_settings().redis.url, db=get_settings().redis.email_code_db) as rc:
             await rc.set(email, code, 300)
         message = EmailNotification(
-            to_email=email,
+            to_user_email=email,
             title=title,
             body=code,
         )

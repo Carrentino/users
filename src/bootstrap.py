@@ -12,10 +12,12 @@ from helpers.api.bootstrap.setup_error_handlers import setup_error_handlers
 from helpers.api.middleware.auth import AuthMiddleware
 from helpers.api.middleware.trace_id.middleware import TraceIdMiddleware
 from helpers.api.middleware.unexpected_errors.middleware import ErrorsHandlerMiddleware
+from helpers.kafka.producer import KafkaProducer
 from helpers.sqlalchemy.client import SQLAlchemyClient
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
 
+from src.integrations.notifications import NotificationsClient
 from src.kafka.payment.views import payment_listener
 from src.kafka.user.views import user_listener
 from src.settings import get_settings
@@ -27,6 +29,9 @@ from src.web.api.users.views import users_router
 def make_db_client(dsn: PostgresDsn = get_settings().postgres_dsn) -> SQLAlchemyClient:
     return SQLAlchemyClient(dsn=dsn)
 
+@lru_cache()
+def get_kafka_producer() -> NotificationsClient:
+    return NotificationsClient()
 
 @asynccontextmanager
 async def _lifespan(
@@ -38,6 +43,8 @@ async def _lifespan(
         bootstrap_servers=get_settings().kafka.bootstrap_servers,
         group_id=get_settings().kafka.group_id,
     )
+    kafka_producer = get_kafka_producer()
+    await kafka_producer.start()
     await kafka_consumer.start()
     create_task(payment_listener.listen(kafka_consumer))
     create_task(user_listener.listen(kafka_consumer))
@@ -48,6 +55,7 @@ async def _lifespan(
     finally:
         await client.close()
         await kafka_consumer.stop()
+        await kafka_producer.stop()
 
 
 def setup_middlewares(app: FastAPI) -> None:

@@ -1,3 +1,4 @@
+from src.bootstrap import get_kafka_producer
 from src.integrations.cars import CarsClient
 from src.integrations.notifications import NotificationsClient
 from src.integrations.payment import PaymentClient
@@ -5,7 +6,7 @@ from src.integrations.reviews import ReviewsClient
 
 
 async def get_notifications_client() -> NotificationsClient:
-    return NotificationsClient()
+    return get_kafka_producer()
 
 
 async def get_payment_client() -> PaymentClient:

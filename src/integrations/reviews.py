@@ -1,7 +1,7 @@
-from urllib.error import HTTPError
 from uuid import UUID
 
 from helpers.clients.http_client import BaseApiClient
+from httpx import HTTPError
 
 from src.settings import get_settings
 

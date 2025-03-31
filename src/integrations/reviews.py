@@ -13,7 +13,9 @@ class ReviewsClient(BaseApiClient):
     async def get_reviews(self, user_id: UUID, token: str | None = None) -> list:
         if token is not None:
             self.headers['X-Auth-Token'] = token
-        response = await self.get(urljoin(self._base_url, f"users/{user_id}/?limit=3&sort=popularity"))
+        sub_url = f"users/{user_id}/?limit=3&sort=popularity"
+        print(type(sub_url), type(self._base_url), self._base_url)  # noqa
+        response = await self.get(urljoin(self._base_url, sub_url))
         try:
             response.raise_for_status()
         except HTTPError:

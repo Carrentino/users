@@ -12,7 +12,6 @@ from helpers.api.bootstrap.setup_error_handlers import setup_error_handlers
 from helpers.api.middleware.auth import AuthMiddleware
 from helpers.api.middleware.trace_id.middleware import TraceIdMiddleware
 from helpers.api.middleware.unexpected_errors.middleware import ErrorsHandlerMiddleware
-from helpers.kafka.producer import KafkaProducer
 from helpers.sqlalchemy.client import SQLAlchemyClient
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
@@ -29,9 +28,11 @@ from src.web.api.users.views import users_router
 def make_db_client(dsn: PostgresDsn = get_settings().postgres_dsn) -> SQLAlchemyClient:
     return SQLAlchemyClient(dsn=dsn)
 
-@lru_cache()
+
+@lru_cache
 def get_kafka_producer() -> NotificationsClient:
     return NotificationsClient()
+
 
 @asynccontextmanager
 async def _lifespan(

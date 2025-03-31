@@ -32,7 +32,7 @@ class RedisSettings(BaseSettings):
         validate_default=True,
         case_sensitive=False,
         extra='ignore',
-        env_prefix='redis_'
+        env_prefix='redis_',
     )
 
 
@@ -69,7 +69,7 @@ class Settings(BaseSettings):
         extra='ignore',
     )
 
-    host: str = '0.0.0.0'
+    host: str = '0.0.0.0'  # noqa: S104
     port: int = 8080
     workers_count: int = 1
     reload: bool = True

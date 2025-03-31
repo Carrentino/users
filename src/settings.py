@@ -94,6 +94,7 @@ class Settings(BaseSettings):
     kafka: KafkaSettings = KafkaSettings()
     auth_settings: AuthSettings = AuthSettings()
     reviews_url: str = Field(default='http://localhost:8080/reviews')
+    cars_url: str = Field(default='http://localhost:8080/cars')
 
 
 @lru_cache

@@ -1,5 +1,4 @@
 from urllib.error import HTTPError
-from urllib.parse import urljoin
 from uuid import UUID
 
 from helpers.clients.http_client import BaseApiClient
@@ -14,8 +13,7 @@ class ReviewsClient(BaseApiClient):
         if token is not None:
             self.headers['X-Auth-Token'] = token
         sub_url = f"users/{user_id}/?limit=3&sort=popularity"
-        print(type(sub_url), type(self._base_url), self._base_url)  # noqa
-        response = await self.get(urljoin(self._base_url, sub_url))
+        response = await self.get(self._base_url.join(sub_url))
         try:
             response.raise_for_status()
         except HTTPError:

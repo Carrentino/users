@@ -10,7 +10,7 @@ class CarsClient(BaseApiClient):
     _base_url = get_settings().cars_url
 
     async def get_cars(self, ids: list[UUID], limit: int = 30, offset: int = 0) -> CarPaginatedResponse:
-        url = f'{self._base_url}/api/listings/?limit={limit}&offset={offset}'
+        url = f'{self._base_url.join('/api/listings/')}?limit={limit}&offset={offset}'
         for car_id in ids:
             url += f'&car__id={car_id}'
         response = await self.get(url)

@@ -19,4 +19,11 @@ class CarsClient(BaseApiClient):
             response.raise_for_status()
         except HTTPError:
             return CarPaginatedResponse(data=[])
-        return CarPaginatedResponse.model_validate_json(response.json())
+        json_response = response.json()
+        return CarPaginatedResponse(
+            page=json_response['page'],
+            size=json_response['size'],
+            total=json_response['total'],
+            total_pages=json_response['total_pages'],
+            data=json_response['data'],
+        )

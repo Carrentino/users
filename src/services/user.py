@@ -114,6 +114,7 @@ class UserService:
                 refresh_payload,
                 get_settings().auth_settings.algorithm,
             ),
+            user_id=user.id,
         )
 
     async def login(self, email: str, password: str) -> TokenResponse:

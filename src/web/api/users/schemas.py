@@ -17,6 +17,7 @@ class VerifyTokenReq(BaseModel):
 
 
 class TokenResponse(BaseModel):
+    user_id: UUID
     access_token: str
     refresh_token: str
 

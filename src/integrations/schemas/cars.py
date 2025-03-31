@@ -45,4 +45,4 @@ class CarSchema(BaseModel):
 
 
 class CarPaginatedResponse(PaginatedResponse):
-    data: list[CarSchema]
+    data: list[CarSchema | None]

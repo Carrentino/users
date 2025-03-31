@@ -11,7 +11,6 @@ from fastapi.responses import UJSONResponse
 from helpers.api.bootstrap.setup_error_handlers import setup_error_handlers
 from helpers.api.middleware.auth import AuthMiddleware
 from helpers.api.middleware.trace_id.middleware import TraceIdMiddleware
-from helpers.api.middleware.unexpected_errors.middleware import ErrorsHandlerMiddleware
 from helpers.sqlalchemy.client import SQLAlchemyClient
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
@@ -60,7 +59,7 @@ async def _lifespan(
 
 
 def setup_middlewares(app: FastAPI) -> None:
-    app.add_middleware(ErrorsHandlerMiddleware, is_debug=get_settings().debug)  # type: ignore
+    # app.add_middleware(ErrorsHandlerMiddleware, is_debug=get_settings().debug)  # type: ignore
     app.add_middleware(TraceIdMiddleware)  # type: ignore
     app.add_middleware(AuthMiddleware, key=get_settings().jwt_key)  # type: ignore
 

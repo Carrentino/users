@@ -1,7 +1,6 @@
 from uuid import UUID
 
 from helpers.clients.http_client import BaseApiClient
-from httpx import HTTPError
 
 from src.integrations.schemas.cars import CarPaginatedResponse
 from src.settings import get_settings
@@ -17,6 +16,6 @@ class CarsClient(BaseApiClient):
         response = await self.get(url)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except:  # noqa: E722
             return CarPaginatedResponse(data=[])
         return CarPaginatedResponse.model_validate(response.json())

@@ -15,11 +15,14 @@ from helpers.api.middleware.unexpected_errors.middleware import ErrorsHandlerMid
 from helpers.sqlalchemy.client import SQLAlchemyClient
 from prometheus_fastapi_instrumentator import Instrumentator
 from pydantic import PostgresDsn
+from sqladmin import Admin
 
 from src.integrations.notifications import NotificationsClient
 from src.kafka.payment.views import payment_listener
 from src.kafka.user.views import user_listener
 from src.settings import get_settings
+from src.web.admin.user import UserAdmin
+from src.web.admin.user_favorite import UserFavoriteAdmin
 from src.web.api.me.views import me_router
 from src.web.api.users.views import users_router
 
@@ -78,6 +81,13 @@ def setup_prometheus(app: FastAPI) -> None:
     )
 
 
+def setup_admin(app, dsn):
+    engine = make_db_client(dsn)._engine
+    admin = Admin(app, engine, title="Users Admin", base_url="/users/admin")
+    admin.add_view(UserAdmin)
+    admin.add_view(UserFavoriteAdmin)
+
+
 def make_app() -> FastAPI:
     app = FastAPI(
         title='users',
@@ -92,6 +102,7 @@ def make_app() -> FastAPI:
     setup_prometheus(app)
     setup_api_routers(app)
     setup_middlewares(app)
+    setup_admin(app, get_settings().postgres_dsn)
 
     def custom_openapi():
         if app.openapi_schema:

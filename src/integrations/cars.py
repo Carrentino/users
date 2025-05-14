@@ -11,6 +11,8 @@ class CarsClient(BaseApiClient):
 
     async def get_cars(self, ids: list[UUID], limit: int = 30, offset: int = 0) -> CarPaginatedResponse:
         url = f'{self._base_url.join('api/listings/')}?limit={limit}&offset={offset}'
+        if not ids:
+            return CarPaginatedResponse(data=[])
         for car_id in ids:
             url += f'&car__id={car_id}'
         response = await self.get(url)

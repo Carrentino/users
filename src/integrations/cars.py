@@ -12,12 +12,12 @@ class CarsClient(BaseApiClient):
     async def get_cars(self, ids: list[UUID], limit: int = 30, offset: int = 0) -> CarPaginatedResponse:
         url = f'{self._base_url.join('api/listings/')}?limit={limit}&offset={offset}'
         if not ids:
-            return CarPaginatedResponse(data=[])
+            return CarPaginatedResponse(data=[], page=1, size=0, total=0, total_pages=1)
         for car_id in ids:
             url += f'&car__id={car_id}'
         response = await self.get(url)
         try:
             response.raise_for_status()
         except:  # noqa: E722
-            return CarPaginatedResponse(data=[])
+            return CarPaginatedResponse(data=[], page=1, size=0, total=0, total_pages=1)
         return CarPaginatedResponse.model_validate(response.json())

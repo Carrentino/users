@@ -24,6 +24,7 @@ from src.settings import get_settings
 from src.web.admin.user import UserAdmin
 from src.web.admin.user_favorite import UserFavoriteAdmin
 from src.web.api.me.views import me_router
+from src.web.api.payments.views import payments_router
 from src.web.api.users.views import users_router
 
 
@@ -72,6 +73,7 @@ def setup_api_routers(app: FastAPI) -> None:
     api_router = APIRouter(prefix='/users/api')
     api_router.include_router(users_router, prefix='/users', tags=['users'])
     api_router.include_router(me_router, prefix='/me', tags=['me'])
+    api_router.include_router(payments_router, prefix='/payments', tags=['payment'])
     app.include_router(router=api_router)
 
 

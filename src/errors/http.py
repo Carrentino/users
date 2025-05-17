@@ -25,3 +25,8 @@ class InvalidCodeHttpError(ServerError):
 class WrongPasswordHttpError(ServerError):
     status_code = status.HTTP_403_FORBIDDEN
     message = 'Wrong password'
+
+
+class PaymentServiceIsOffHttpError(ServerError):
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    message = 'Пни олега поднимать payments сервис'

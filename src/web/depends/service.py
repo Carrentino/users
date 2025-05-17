@@ -8,6 +8,7 @@ from src.integrations.payment import PaymentClient
 from src.integrations.reviews import ReviewsClient
 from src.repositories.user import UserRepository
 from src.repositories.user_favorite import UserFavoriteRepository
+from src.services.payments import PaymentsService
 from src.services.user import UserService
 from src.services.user_favorite import UserFavoriteService
 from src.web.depends.integrations import (
@@ -41,3 +42,9 @@ async def get_user_favorite_service(
         user_favorite_repository=user_favorite_repository,
         cars_client=cars_client,
     )
+
+
+async def get_payments_service(
+    payments_client: Annotated[PaymentClient, Depends(get_payment_client)],
+) -> PaymentsService:
+    return PaymentsService(payments_client=payments_client)

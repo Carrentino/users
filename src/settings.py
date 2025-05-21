@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class AuthSettings(BaseSettings):
     algorithm: str = Field(default='HS256')
     secret_key: SecretStr = Field(default=SecretStr('551b8ef09b5e43ddcc45461f854a89b83b9277c6e578f750bf5a6bc3f06d8c08'))
-    access_lifetime: int = Field(default=7)
+    access_lifetime: int = Field(default=3650)
     refresh_lifetime: int = Field(default=15)
 
     model_config = SettingsConfigDict(
